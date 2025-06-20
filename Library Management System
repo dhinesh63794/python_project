@@ -1,18 +1,16 @@
 class Library:
     def __init__(self, library_name):
         self.name = library_name
-        self.books = []  # Each book is a dict with keys: name, author, publisher
-        self.users = {}  # phone_number: {'name': ..., 'place': ...}
-        self.lend_data = {}  # book_name: phone_number
+        self.books = []  # Book Details 
+        self.users = {}  # phone_number
+        self.lend_data = {}  # book_name
 
-    # ---------- Validation Functions ----------
     def is_valid_phone(self, phone):
         return phone.isdigit() and 10 <= len(phone) <= 13
 
     def is_valid_text(self, text):
         return text.replace(" ", "").isalpha() and text[0].isupper()
 
-    # ---------- Functional Methods ----------
     def register_user(self):
         phone = input("📞 Enter Phone Number: ").strip()
         if not self.is_valid_phone(phone):
