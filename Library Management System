@@ -1,0 +1,141 @@
+class Library:
+    def __init__(self, library_name):
+        self.name = library_name
+        self.books = []  # Each book is a dict with keys: name, author, publisher
+        self.users = {}  # phone_number: {'name': ..., 'place': ...}
+        self.lend_data = {}  # book_name: phone_number
+
+    # ---------- Validation Functions ----------
+    def is_valid_phone(self, phone):
+        return phone.isdigit() and 10 <= len(phone) <= 13
+
+    def is_valid_text(self, text):
+        return text.replace(" ", "").isalpha() and text[0].isupper()
+
+    # ---------- Functional Methods ----------
+    def register_user(self):
+        phone = input("📞 Enter Phone Number: ").strip()
+        if not self.is_valid_phone(phone):
+            print("❌ Invalid phone number. Use 10–13 digits only.")
+            return
+
+        if phone in self.users:
+            print("✅ User already registered.")
+        else:
+            name = input("👤 Enter Name: ").strip()
+            place = input("📍 Enter Place: ").strip()
+
+            if not self.is_valid_text(name):
+                print("❌ Invalid name. Must start with a capital letter and contain only letters.")
+                return
+            if not self.is_valid_text(place):
+                print("❌ Invalid place. Must start with a capital letter and contain only letters.")
+                return
+
+            self.users[phone] = {'name': name, 'place': place}
+            print(f"✅ User '{name}' registered successfully.")
+
+    def add_book(self):
+        name = input("📘 Enter Book Name: ").strip()
+        author = input("✍️ Enter Author Name: ").strip()
+        publisher = input("🏢 Enter Publisher Name: ").strip()
+
+        if not self.is_valid_text(name):
+            print("❌ Invalid book name. Must start with a capital letter and contain only letters.")
+            return
+        if not self.is_valid_text(author):
+            print("❌ Invalid author name. Must start with a capital letter and contain only letters.")
+            return
+        if not self.is_valid_text(publisher):
+            print("❌ Invalid publisher name. Must start with a capital letter and contain only letters.")
+            return
+
+        for book in self.books:
+            if book['name'].lower() == name.lower():
+                print("⚠️ Book already exists.")
+                return
+
+        self.books.append({'name': name, 'author': author, 'publisher': publisher})
+        print(f"✅ Book '{name}' added successfully.")
+
+    def display_books(self):
+        if not self.books:
+            print("📚 No books in the library.")
+            return
+        print(f"\n📖 Books in {self.name}:")
+        for book in self.books:
+            status = "Available" if book['name'] not in self.lend_data else f"Lent to {self.users[self.lend_data[book['name']]]['name']}"
+            print(f" - {book['name']} | Author: {book['author']} | Publisher: {book['publisher']} | Status: {status}")
+
+    def lend_book(self):
+        phone = input("📞 Enter Your Phone Number: ").strip()
+        if phone not in self.users:
+            print("❌ User not found. Please register first.")
+            return
+
+        book_name = input("📘 Enter Book Name to Lend: ").strip()
+
+        for book in self.books:
+            if book['name'].lower() == book_name.lower():
+                if book['name'] in self.lend_data:
+                    current_user = self.users[self.lend_data[book['name']]]['name']
+                    print(f"❗ Book already lent to {current_user}.")
+                    return
+                self.lend_data[book['name']] = phone
+                print(f"✅ Book '{book['name']}' lent to {self.users[phone]['name']}.")
+                return
+
+        print("❌ Book not found.")
+
+    def return_book(self):
+        book_name = input("📘 Enter Book Name to Return: ").strip()
+        if book_name in self.lend_data:
+            self.lend_data.pop(book_name)
+            print(f"✅ Book '{book_name}' returned.")
+        else:
+            print("❌ This book was not lent out.")
+
+    def display_users(self):
+        if not self.users:
+            print("❌ No users registered.")
+            return
+        print("\n👥 Registered Users:")
+        for phone, info in self.users.items():
+            print(f" - {info['name']} | 📞 {phone} | 📍 {info['place']}")
+
+# ---------- Main Menu ----------
+def main():
+    lib = Library("City Library")
+
+    while True:
+        print("\n📌 --- Library Menu ---")
+        print("1. Register User")
+        print("2. Add Book")
+        print("3. Display Books")
+        print("4. Lend Book")
+        print("5. Return Book")
+        print("6. Display Users")
+        print("7. Exit")
+
+        choice = input("Enter your choice (1–7): ")
+
+        if choice == "1":
+            lib.register_user()
+        elif choice == "2":
+            lib.add_book()
+        elif choice == "3":
+            lib.display_books()
+        elif choice == "4":
+            lib.lend_book()
+        elif choice == "5":
+            lib.return_book()
+        elif choice == "6":
+            lib.display_users()
+        elif choice == "7":
+            print("👋 Exiting Library System. Goodbye!")
+            break
+        else:
+            print("❌ Invalid choice. Please enter a number from 1 to 7.")
+
+if __name__ == "__main__":
+    main()
